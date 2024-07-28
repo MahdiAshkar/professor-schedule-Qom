@@ -67,7 +67,6 @@ class ScheduleController {
       const schedule = await this.#scheduleModel
         .findOne({ professor_id: id, term, academicYear })
         .lean();
-
       if (!schedule)
         return res.status(404).json({ message: "not found schedule" });
       return res.status(200).json(schedule._id);

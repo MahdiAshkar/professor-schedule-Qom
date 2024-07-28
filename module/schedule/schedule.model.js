@@ -24,8 +24,8 @@ const dayScheduleSchema = new Schema(
 const ScheduleSchema = new Schema({
   professor_id: { type: Types.ObjectId, ref: "professor", required: true },
   days: [dayScheduleSchema],
-  academicYear: { type: Number },
-  term: { type: Number },
+  academicYear: { type: Number, required: true },
+  term: { type: Number, required: true },
 });
 const ScheduleModel = model("schedule", ScheduleSchema);
 module.exports = ScheduleModel;
