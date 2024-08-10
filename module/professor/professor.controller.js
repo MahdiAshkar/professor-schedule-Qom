@@ -212,9 +212,14 @@ class ProfessorController {
   }
   async search(req, res, next) {
     try {
-      const { query } = req.query;
+      const { query, group } = req.query;
       const professors = await this.#professorModel
-        .find({ name: new RegExp(query, "i") })
+        .find(
+          group
+            ? { name: new RegExp(query, "i"), group: new RegExp(group, "i") }
+            : { name: new RegExp(query, "i") },
+          { password: 0, pendingUpdate: 0, updateToken: 0, username: 0 }
+        )
         .lean();
 
       res.status(200).json(professors);
@@ -225,7 +230,12 @@ class ProfessorController {
 
   async getAllProfessor(req, res, next) {
     try {
-      const professors = await this.#professorModel.find().lean();
+      const professors = await this.#professorModel
+        .find(
+          {},
+          { password: 0, username: 0, pendingUpdate: 0, updateToken: 0 }
+        )
+        .lean();
       res.status(200).json(professors);
     } catch (error) {
       next(error);
@@ -239,7 +249,11 @@ class ProfessorController {
       const prof = await this.#professorModel.findById(professor._id);
       if (!prof)
         return res.status(401).json({ message: "not found professor" });
-      const schedule = await this.#scheduleModel.find({ academicYear, term });
+      const schedule = await this.#scheduleModel.find({
+        professor_id: professor._id,
+        academicYear,
+        term,
+      });
       if (schedule.length > 0) {
         return res.status(400).json({
           message:
