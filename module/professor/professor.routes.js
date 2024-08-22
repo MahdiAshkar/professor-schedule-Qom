@@ -18,6 +18,10 @@ professorRouter.put(
   professorController.updateProfessor
 );
 professorRouter.get("/confirm-update/:token", professorController.confirmToken);
+professorRouter.get(
+  "/conversations/:id",
+  professorController.getInfoConversation
+);
 professorRouter.post("/login", professorController.login);
 professorRouter.get("/logout", professorController.logout);
 professorRouter.get("/search", professorController.search);

@@ -2,21 +2,24 @@ const createHttpError = require("http-errors");
 const ProfessorModel = require("./professor.model");
 const ScheduleModel = require("../schedule/schedule.model");
 const autoBind = require("auto-bind");
-const { mongoose } = require("mongoose");
+const { mongoose, ObjectId, Types } = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const dotenv = require("dotenv");
+const ChatRoomModel = require("../messages/chatRoom.model");
 dotenv.config();
 class ProfessorController {
   #scheduleModel;
   #professorModel;
+  #ChatRoomModel;
   constructor() {
     autoBind(this);
     this.#scheduleModel = ScheduleModel;
     this.#professorModel = ProfessorModel;
+    this.#ChatRoomModel = ChatRoomModel;
   }
 
   async register(req, res, next) {
@@ -90,6 +93,31 @@ class ProfessorController {
       res.clearCookie("access_token").status(200).json({
         message: "log out successfully",
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getInfoConversation(req, res, next) {
+    try {
+      let { id } = req.params;
+      const professor = await this.#professorModel.findById(id);
+      if (professor) {
+        const _id = new mongoose.Types.ObjectId(id);
+        const listConversation = await this.#ChatRoomModel
+          .find({
+            professorId: _id,
+          })
+          .populate("studentId", {
+            name: 1,
+            studentNumber: 1,
+            image: 1,
+            _id: 1,
+          })
+          .populate("professorId", { name: 1, image_profile: 1, _id: 1 });
+        res.status(200).json(listConversation);
+      } else {
+        throw new Error("not found professor for info conversation");
+      }
     } catch (error) {
       next(error);
     }
@@ -303,7 +331,14 @@ class ProfessorController {
   async getProfessorById(req, res, next) {
     try {
       const { id } = req.params;
-      const professor = await this.#professorModel.findById(id).lean();
+      const professor = await this.#professorModel
+        .findById(id, {
+          password: 0,
+          updateToken: 0,
+          pendingUpdate: 0,
+          username: 0,
+        })
+        .lean();
 
       if (!professor) {
         return res.status(404).json({ message: "Professor not found" });
