@@ -4,13 +4,15 @@ const ProfessorModel = require("../module/professor/professor.model");
 require("dotenv").config();
 const authorization = async (req, res, next) => {
   try {
-    const token = req?.cookies?.access_token;
-    if (!token)
+    const { token } = req.body;
+    const _token = req?.cookies?.access_token || token;
+    console.log("cookie:", req?.cookies?.access_token);
+    if (!_token)
       throw new createHttpError.Unauthorized(
         "Not authorization please Login your account"
       );
 
-    const data = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const data = jwt.verify(_token, process.env.JWT_SECRET_KEY);
     if (data?.id) {
       const professor = await ProfessorModel.findById(data.id);
       if (!professor)

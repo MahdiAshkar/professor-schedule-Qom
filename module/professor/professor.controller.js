@@ -80,7 +80,13 @@ class ProfessorController {
       delete professor.username;
       req.professor = professor;
       res
-        .cookie("access_token", token, { httpOnly: true, secure: false })
+        .cookie("access_token", token, {
+          httpOnly: true,
+          domain: ".liara.run",
+          maxAge: 6 * 60 * 60 * 1000,
+          secure: true,
+          sameSite: "None",
+        })
         .status(200)
         .json({ message: "success login", token, id: professor._id });
     } catch (error) {
@@ -90,9 +96,12 @@ class ProfessorController {
 
   async logout(req, res, next) {
     try {
-      res.clearCookie("access_token").status(200).json({
-        message: "log out successfully",
-      });
+      res
+        .clearCookie("access_token", { domain: ".liara.run", path: "/" })
+        .status(200)
+        .json({
+          message: "log out successfully",
+        });
     } catch (error) {
       next(error);
     }
@@ -173,7 +182,7 @@ class ProfessorController {
       let htmlTemplate = fs.readFileSync(templatePath, "utf8");
 
       const name = professor.name;
-      const confirmationLink = `http://localhost:3000/professor/confirm-update/${token}`;
+      const confirmationLink = `https://schedule-professor.liara.run/professor/confirm-update/${token}`;
       htmlTemplate = htmlTemplate.replace("{{username}}", name);
       htmlTemplate = htmlTemplate.replace(
         "{{confirmationLink}}",
@@ -230,7 +239,7 @@ class ProfessorController {
       await professor.save();
       const templatePath = path.join(__dirname, "verified.html");
       let verifiedTemplate = fs.readFileSync(templatePath, "utf8");
-      homeLink = "http://localhost:3000/professor/login";
+      homeLink = "https://schedule-professor-demo.liara.run/professor/login";
       htmlTemplate = htmlTemplate.replace("{{backToLogin}}", homeLink);
       res.status(200).send(verifiedTemplate);
     } catch (error) {

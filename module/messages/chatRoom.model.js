@@ -2,7 +2,6 @@ const { model, Schema, Types } = require("mongoose");
 
 const chatRoomSchema = new Schema(
   {
-    //  type: Types.ObjectId, ref: "professor"
     roomId: { type: String, required: true, unique: true },
     studentId: { type: Types.ObjectId, ref: "student", required: true },
     professorId: { type: Types.ObjectId, ref: "professor", required: true },

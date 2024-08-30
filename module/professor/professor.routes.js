@@ -13,7 +13,6 @@ professorRouter.post(
 
 professorRouter.put(
   "/update",
-  authorization,
   upload.single("newPhoto"),
   professorController.updateProfessor
 );

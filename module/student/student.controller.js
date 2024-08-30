@@ -51,6 +51,9 @@ class StudentController {
       const { name, password, studentNumber } = req.body;
       let image = "/uploads/" + req?.file?.filename;
       if (!req?.file) image = "/images/avatar_profile.jpg";
+      console.log("name", name);
+      console.log("password", password);
+      console.log("studentNumber", studentNumber);
       const newPassword = await bcrypt.hash(password, 12);
       const student = await this.#studentModel.findOneAndUpdate(
         { studentNumber },

@@ -2,6 +2,7 @@ const path = require("path");
 const http = require("http");
 
 const express = require("express");
+const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const socketIo = require("socket.io");
@@ -14,7 +15,9 @@ const cors = require("cors");
 const chatRoomModel = require("./module/messages/chatRoom.model");
 
 const corsOptions = {
-  origin: "http://localhost:8080",
+  origin: "https://schedule-professor-demo.liara.run",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
@@ -23,7 +26,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:8080",
+    origin: "https://schedule-professor-demo.liara.run",
     credentials: true,
   },
 });
@@ -55,7 +58,11 @@ io.on("connection", (socket) => {
       socket.emit("previousMessages", chatRoom.messages);
 
       socket.on("sendMessage", async (messageData) => {
-        if (isStudent === "true" && chatRoom.messages.length >= 15) {
+        if (
+          isStudent === "true" &&
+          chatRoom.messages.length >= 15 &&
+          !chatRoom.status
+        ) {
           socket.emit(
             "messages-overflow",
             "پیام ها بیش از 15 تا  شده است بسته می شود"
@@ -83,11 +90,12 @@ io.on("connection", (socket) => {
 });
 const port = process.env.PORT;
 app.use(express.static("public"));
-app.use(cors(corsOptions));
 require("./config/mongoose");
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
+app.use(cors(corsOptions));
+app.use(morgan("dev"));
 app.use(mainRouter);
 swaggerConfig(app);
 notFoundHandler(app);

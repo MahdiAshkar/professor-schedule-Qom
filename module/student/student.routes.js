@@ -13,11 +13,6 @@ studentRouter.post(
 studentRouter.get("/info/:id", studentController.getInfo);
 studentRouter.get("/conversations/:id", studentController.getInfoConversation);
 studentRouter.get("/checkToken/:token", studentController.checkToken);
-studentRouter.put(
-  "/update",
-  authorizationStudent,
-  upload.single("image"),
-  studentController.update
-);
+studentRouter.put("/update", upload.single("image"), studentController.update);
 studentRouter.get("/logout", studentController.logout);
 module.exports = studentRouter;
