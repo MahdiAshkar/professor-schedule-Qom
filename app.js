@@ -13,9 +13,9 @@ const notFoundHandler = require("./exception/notFound.handler");
 const allExceptionHandler = require("./exception/allException.handler");
 const cors = require("cors");
 const chatRoomModel = require("./module/messages/chatRoom.model");
-
+const origin_url = "https://schedule-professor-demo.liara.run";
 const corsOptions = {
-  origin: "https://schedule-professor-demo.liara.run",
+  origin: origin_url,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -26,7 +26,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://schedule-professor-demo.liara.run",
+    origin: origin_url,
     credentials: true,
   },
 });
