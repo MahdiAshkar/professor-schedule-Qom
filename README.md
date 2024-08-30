@@ -18,6 +18,7 @@ If you change the domain of the frontend site application, you must change the o
 
 ## change Environment Variable
 
+```
 MONGODB_URL => url database mongodb
 MY_EMAIL,PASSWORD_EMAIL => confirm register change email
 PORT = 3005
@@ -26,6 +27,7 @@ JWT_SECRET_KEY = 'random'
 COOKIE_SECRET_KEY = 'random'
 MY_EMAIL = 'mahdi81.it@gmail.com'
 PASSWORD_EMAIL = 'my password'
+```
 
 ## install package
 
